@@ -8,9 +8,15 @@ public class DNSClient {
   public static String DNSIP = "0.0.0.0";
   public static String targetDomain = "www.example.com";
   public static String queryType;
+  public static int port = 2208;
   
   private static Pattern pattern;
   private static Matcher matcher;
+  
+  /*
+   * The regular expression below is borrowed from:
+   * http://examples.javacodegeeks.com/core-java/util/regex/matcher/validate-ip-address-with-java-regular-expression-example/
+   */
   private static final String IPADDRESS_PATTERN = 
       "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
       "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -35,6 +41,16 @@ public class DNSClient {
         System.out.println("The IP address of the DNS server is invalid.");
         System.exit(1);
       } 
+      
+      
+      // If everything else checks out to be correct, init the UDP socket
+      UDPClient client = new UDPClient(DNSIP, port, targetDomain, queryType);
+      
+      try {
+        client.connect("Hi server");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       
     } else {
       System.out.println("Usage: java -cp *.jar DNSClient 8.8.8.8 www.cnn.com A");
