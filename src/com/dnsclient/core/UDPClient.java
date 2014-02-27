@@ -43,13 +43,13 @@ public class UDPClient {
      
      DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
      clientSocket.send(sendPacket);
-     System.out.println("TO SERVER:" + sendPacket.getData());
+     System.out.println("DATA TO SERVER:" + sendPacket.getData());
      
      DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
      clientSocket.receive(receivePacket);
      
      String modifiedSentence = new String(receivePacket.getData());
-     System.out.println("FROM SERVER:" + modifiedSentence);
+     System.out.println("DATA FROM SERVER:" + modifiedSentence);
      
      clientSocket.close();
   }

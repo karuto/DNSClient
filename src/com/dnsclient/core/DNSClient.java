@@ -29,10 +29,6 @@ public class DNSClient {
       DNSIP = args[0]; // the IP address of the DNS server
       targetDomain = args[1]; // the domain name to look up
       queryType = args[2]; // the type of query (e.g., [A, NS, MX])
-
-      System.out.println("======= " + DNSIP);
-      System.out.println("======= " + targetDomain);
-      System.out.println("======= " + queryType);
       
       // Validate IP address, quit if invalid
       pattern = Pattern.compile(IPADDRESS_PATTERN);
@@ -42,15 +38,15 @@ public class DNSClient {
         System.exit(1);
       } 
       
-      
       // If everything else checks out to be correct, init the UDP socket
       UDPClient client = new UDPClient(DNSIP, port, targetDomain, queryType);
+      RequestGenerator request = new RequestGenerator(targetDomain, queryType);
       
-      try {
-        client.connect("Hi server");
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+//      try {
+//        client.connect("Hi server");
+//      } catch (Exception e) {
+//        e.printStackTrace();
+//      }
       
     } else {
       System.out.println("Usage: java -cp *.jar DNSClient 8.8.8.8 www.cnn.com A");
