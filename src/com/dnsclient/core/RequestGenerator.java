@@ -12,7 +12,7 @@ public class RequestGenerator {
   public RequestGenerator(String targetDomain, String queryType) {
     this.targetDomain = targetDomain;
     this.queryType = queryType;
-    data = new byte[64];
+    data = new byte[12];
     build();
   }
   
@@ -22,22 +22,63 @@ public class RequestGenerator {
     System.out.println(this.targetDomain);
     System.out.println(this.queryType);
     
-    /* HEADER */
-    /* 16 bit Message ID */
+    /* HEADER SECTION */
+    /* 16 bit Message ID, randomly generated */
+    // TODO: record this message ID so that it can be parsed at response
     byte[] messageID = new byte[2];
     new Random().nextBytes(messageID);
+    data[0] = messageID[0];
+    data[1] = messageID[1];
+    
+    /* 16 bit second row in HEADER:
+     * QR-1 OPCODE-4  AA-1  TC-1  RD-1  RA-1  0 0 0 RCODE-4
+     * For request:
+     * QR = 0
+     * OPCODE = 0000
+     * AA = 0
+     * TC = 0
+     * RD = 0 // not sure
+     * RA = 0 // not sure
+     * RCODE = 0000
+     * Row data: 0 0000 000 | 0 000 0000 
+     */
+    data[2] = 0x00;
+    data[3] = 0x00;
+
+    /*16 bit unsigned int QDCOUNT */
+    data[4] = 0x00;
+    data[5] = 0x01;
+    
+    /*16 bit unsigned int ANCOUNT */
+    data[6] = 0x00;
+    data[7] = 0x00;
+    
+    /*16 bit unsigned int NSCOUNT */
+    data[8] = 0x00;
+    data[9] = 0x00;
+    
+    /*16 bit unsigned int ARCOUNT */
+    data[10] = 0x00;
+    data[11] = 0x00;
+    
+    /* */
+    
     
     System.out.println("====== HEADER ======");
-    printBitsFromByteArray(messageID);
+    System.out.println("Message ID ======");
+    
+    printBitsFromByteArray(data);
+    
     
   }
   
   
   /* Helper function to print bits from a byte array */
   private void printBitsFromByteArray(byte[] bytes) {
-    for (byte b : bytes)
+    for (int i = 0; i < bytes.length; i++)
     {
-      printBitsFromByte(b);
+      System.out.println("Byte #" + i);
+      printBitsFromByte(bytes[i]);
     }
   }
   
