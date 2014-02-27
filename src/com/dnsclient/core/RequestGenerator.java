@@ -1,4 +1,5 @@
 package com.dnsclient.core;
+import java.nio.ByteBuffer;
 import java.util.Random;
 
 public class RequestGenerator {
@@ -17,7 +18,7 @@ public class RequestGenerator {
   }
   
   
-  private void build() {
+  private byte[] build() {
     System.out.println("====== STARTING REQUEST BUILDER ======");
     System.out.println(this.targetDomain);
     System.out.println(this.queryType);
@@ -61,15 +62,26 @@ public class RequestGenerator {
     data[10] = 0x00;
     data[11] = 0x00;
     
-    /* */
+    /* QUESTION SECTION */
+    /* QNAME */
+    String[] domainParts = targetDomain.split("\\.");
+    int QNAMEBytes = 0;
+    byte[] domain = new byte[5];
+    ByteBuffer buffer = ByteBuffer.wrap(domain);
+    for (int i = 0; i < domainParts.length; i++) {
+      QNAMEBytes++;
+//      buffer.putInt(domainParts[i].length());
+      domain[i] = (byte) domainParts[i].length();
+    }
+    printBitsFromByteArray(domain);
+
+    /* QTYPE */
+    /* QCLASS */
     
     
     System.out.println("====== HEADER ======");
-    System.out.println("Message ID ======");
-    
-    printBitsFromByteArray(data);
-    
-    
+//    printBitsFromByteArray(data);
+    return data;
   }
   
   
