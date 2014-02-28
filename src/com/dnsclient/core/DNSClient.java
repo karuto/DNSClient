@@ -24,12 +24,21 @@ public class DNSClient {
       "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
       "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
   
+  /*
+   * The regular expression below is borrowed from:
+   * http://www.mkyong.com/regular-expressions/
+   * domain-name-regular-expression-example/
+   */
+  private static final String DOMAIN_NAME_PATTERN = 
+      "^[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+  
   public static void main (String[] args) {
+    System.out.println(args.length);
     
-    if (args.length == 3) {
-      DNSIP = args[0]; // the IP address of the DNS server
-      targetDomain = args[1]; // the domain name to look up
-      queryType = args[2]; // the type of query (e.g., [A, NS, MX])
+    if (args.length == 4) {
+      DNSIP = args[1]; // the IP address of the DNS server
+      targetDomain = args[2]; // the domain name to look up
+      queryType = args[3]; // the type of query (e.g., [A, NS, MX])
       
       // Validate IP address, quit if invalid
       pattern = Pattern.compile(IPADDRESS_PATTERN);
@@ -38,6 +47,24 @@ public class DNSClient {
         System.out.println("The IP address of the DNS server is invalid.");
         System.exit(1);
       } 
+      
+
+      // Validate domain name, quit if invalid
+      pattern = Pattern.compile(DOMAIN_NAME_PATTERN);
+      matcher = pattern.matcher(targetDomain);
+      if (!matcher.matches()) {
+        System.out.println("The domain name of the DNS server is invalid.");
+        System.exit(1);
+      } 
+      
+      if (queryType.equalsIgnoreCase("A") || 
+          queryType.equalsIgnoreCase("MX") ||
+          queryType.equalsIgnoreCase("NS")) {
+      } else {
+        System.out.println("The type of query is invalid.");
+        System.exit(1);
+      }
+      
       
       // If everything else checks out to be correct, init the UDP socket
       UDPClient client = new UDPClient(DNSIP, port, targetDomain, queryType);
@@ -51,7 +78,7 @@ public class DNSClient {
       }
       
     } else {
-      System.out.println("Usage: java -cp *.jar DNSClient 8.8.8.8 www.cnn.com A");
+      System.out.println("Usage: java -jar *.jar DNSClient 8.8.8.8 www.cnn.com A");
     }
 }
   
