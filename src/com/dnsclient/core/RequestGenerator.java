@@ -73,6 +73,7 @@ public class RequestGenerator {
      */
     byte[] domainBuffer = new byte[targetDomain.length()+2];
 
+    /* Read domain name content into QNAME buffer */
     for (int i = 0; i < domainParts.length; i++) {
       String part = domainParts[i];
       // Store the length (no. of chars) of domain segment first
@@ -92,14 +93,24 @@ public class RequestGenerator {
         
       }
     }
-    printBitsFromByteArray(domainBuffer, false);
+//    printBitsFromByteArray(domainBuffer, false);
+    
+    /* Transfer bytes in buffer to the data byte array */
+    for (int i = 0; i < domainBuffer.length; i++) {
+      data[12+i] = domainBuffer[i];
+    }
 
     /* QTYPE */
+//    switch (queryType.toUpperCase()) {
+//    
+//    }
+    
+    
     /* QCLASS */
     
     
     System.out.println("====== HEADER ======");
-//    printBitsFromByteArray(data);
+    printBitsFromByteArray(data, false);
     return data;
   }
   
