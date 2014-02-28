@@ -8,7 +8,7 @@ public class DNSClient {
   public static String DNSIP = "0.0.0.0";
   public static String targetDomain = "www.example.com";
   public static String queryType;
-  public static int port = 2208;
+  public static int port = 53;
   
   private static Pattern pattern;
   private static Matcher matcher;

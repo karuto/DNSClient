@@ -38,27 +38,27 @@ public class RequestGenerator {
      * OPCODE = 0000
      * AA = 0
      * TC = 0
-     * RD = 0 // not sure
-     * RA = 0 // not sure
+     * RD = 1
+     * RA = 0
      * RCODE = 0000
      * Row data: 0 0000 000 | 0 000 0000 
      */
-    data[2] = 0x00;
+    data[2] = 0x01;
     data[3] = 0x00;
 
-    /*16 bit unsigned int QDCOUNT */
+    /* 16 bit unsigned int QDCOUNT */
     data[4] = 0x00;
     data[5] = 0x01;
     
-    /*16 bit unsigned int ANCOUNT */
+    /* 16 bit unsigned int ANCOUNT */
     data[6] = 0x00;
     data[7] = 0x00;
     
-    /*16 bit unsigned int NSCOUNT */
+    /* 16 bit unsigned int NSCOUNT */
     data[8] = 0x00;
     data[9] = 0x00;
     
-    /*16 bit unsigned int ARCOUNT */
+    /* 16 bit unsigned int ARCOUNT */
     data[10] = 0x00;
     data[11] = 0x00;
     
@@ -93,8 +93,8 @@ public class RequestGenerator {
         
       }
     }
-    printBitsFromByteArray(domainBuffer, true);
-    int bytesBuffer = domainBuffer.length-1;
+//    printBitsFromByteArray(domainBuffer, true);
+    int bytesBuffer = domainBuffer.length;
     System.out.println(bytesBuffer);
     
     /* Transfer bytes in buffer to the data byte array */
@@ -102,13 +102,18 @@ public class RequestGenerator {
       data[12+i] = domainBuffer[i];
     }
 
-    /* QTYPE */
-//    switch (queryType.toUpperCase()) {
-//    
-//    }
+    /* 16 bit unsigned int QTYPE */
+    if (queryType.equalsIgnoreCase("A")) {
+      data[12+bytesBuffer] = 0x00;
+      data[12+bytesBuffer+1] = 0x01;
+    } else {
+      //TODO: Handle 8 other record types
+    }
     
     
     /* QCLASS */
+    data[12+bytesBuffer+2] = 0x00;
+    data[12+bytesBuffer+3] = 0x01;
     
     
     System.out.println("====== HEADER ======");
