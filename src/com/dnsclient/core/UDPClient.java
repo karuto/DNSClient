@@ -35,11 +35,9 @@ public class UDPClient {
     }
   }
   
-  public void connect(String userData) throws Exception {
+  public void connect(byte[] sendData) throws Exception {
      
-     byte[] sendData = new byte[1024];
-     byte[] receiveData = new byte[1024];     
-     sendData = userData.getBytes();
+     byte[] receiveData = new byte[1024];   
      
      DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
      clientSocket.send(sendPacket);

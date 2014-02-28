@@ -42,6 +42,12 @@ public class DNSClient {
       UDPClient client = new UDPClient(DNSIP, port, targetDomain, queryType);
       RequestGenerator request = new RequestGenerator(targetDomain, queryType);
       
+      try {
+        client.connect(request.build());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      
 //      try {
 //        client.connect("Hi server");
 //      } catch (Exception e) {

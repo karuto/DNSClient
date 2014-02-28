@@ -13,12 +13,12 @@ public class RequestGenerator {
   public RequestGenerator(String targetDomain, String queryType) {
     this.targetDomain = targetDomain;
     this.queryType = queryType;
-    data = new byte[12];
-    build();
+    data = new byte[1024];
+    
   }
   
   
-  private byte[] build() {
+  public byte[] build() {
     System.out.println("====== STARTING REQUEST BUILDER ======");
     System.out.println(this.targetDomain);
     System.out.println(this.queryType);
@@ -93,10 +93,12 @@ public class RequestGenerator {
         
       }
     }
-//    printBitsFromByteArray(domainBuffer, false);
+    printBitsFromByteArray(domainBuffer, true);
+    int bytesBuffer = domainBuffer.length-1;
+    System.out.println(bytesBuffer);
     
     /* Transfer bytes in buffer to the data byte array */
-    for (int i = 0; i < domainBuffer.length; i++) {
+    for (int i = 0; i < domainBuffer.length-1; i++) {
       data[12+i] = domainBuffer[i];
     }
 
