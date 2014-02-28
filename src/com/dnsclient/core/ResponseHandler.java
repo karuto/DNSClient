@@ -1,5 +1,6 @@
 package com.dnsclient.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ResponseHandler {
@@ -24,7 +25,6 @@ public class ResponseHandler {
   protected void parseResponse() {
     if (helper.getBitFromByte(data[3],0) == '1') {
       // Valid DNS response, keep parsing
-      helper.printBitsFromByteArray(data, 4, 5);
       
       // Store the number of questions and responses records
       String nQue = "" + helper.getBitsFromByte(data[4]) + 
@@ -66,68 +66,75 @@ public class ResponseHandler {
       helper.printBitsFromByteArray(data, 23, 40); // byte[24] is where it ends (endblock)
       */
       
-      DNSAnswer[] results;
+      ArrayList<DNSAnswer> results = new ArrayList<DNSAnswer>();
       
       
       /* ANSWER SECTION */
-      
       int answerCursor = 0;
-      DNSAnswer answer = new DNSAnswer();
-      /* ANSWER NAME */
-      if (helper.getBitFromByte(data[dataCursor], 0) =='1' && 
-          helper.getBitFromByte(data[dataCursor], 1) == '1') {
-        // This indicates the name field is a pointer
-        String name = "" + (char) data[dataCursor] + (char) data[dataCursor+1];
-        answer.setName(name);
-      } else {
-        // This indicates the name field is not pointer
-        
-      }
-      answerCursor += 2; /* 2 bytes for NAME */
+      int answerCursorTotal = 0;
+      
+      for (int i = 0; i < numAnswers; i++) {
+        DNSAnswer answer = new DNSAnswer();
+        /* ANSWER NAME */
+        if (helper.getBitFromByte(data[dataCursor], 0) =='1' && 
+            helper.getBitFromByte(data[dataCursor], 1) == '1') {
+          // This indicates the name field is a pointer
+          String name = "" + helper.getBitsFromByte(data[dataCursor]) + 
+              helper.getBitsFromByte(data[dataCursor+1]);
+          answer.setName(name);
+        } else {
+          // This indicates the name field is not pointer
+          
+        }
+        dataCursor += 2; /* 2 bytes for NAME */
 
-      /* ANSEWR TYPE */
-      if (helper.getBitsFromByte(data[dataCursor+3]).
-          equalsIgnoreCase("00000001")) { // 0x01, A
-        answer.setType("A");
-      } else if (helper.getBitsFromByte(data[dataCursor+3]).
-          equalsIgnoreCase("00000010")) { // 0x02, NS
-        answer.setType("NS");
-      } else if (helper.getBitsFromByte(data[dataCursor+3]).
-          equalsIgnoreCase("00000101")) { // 0x05, CNAME
-        answer.setType("CNAME");
-      }
-      answerCursor += 2; /* 2 bytes for TYPE */
-      
-      /* ANSEWR CLASS */
-      if (helper.getBitsFromByte(data[dataCursor+5]).
-          equalsIgnoreCase("00000001")) { // 0x01, IN
-        answer.setDnsClass("IN");
-      }
-      answerCursor += 2; /* 2 bytes for CLASS */
-      
-      /* ANSEWR TTL */
-      String ttl = "" + helper.getBitsFromByte(data[dataCursor+6]) + 
-          helper.getBitsFromByte(data[dataCursor+7]) + 
-          helper.getBitsFromByte(data[dataCursor+8]) + 
-          helper.getBitsFromByte(data[dataCursor+9]);
-      answer.setTtl(String.valueOf(Integer.parseInt(ttl, 2)));
-      answerCursor += 4; /* 4 bytes for TTL */
-      
-      /* ANSEWR RLENGTH */
-      String rlength = "" + helper.getBitsFromByte(data[dataCursor+10]) + 
-          helper.getBitsFromByte(data[dataCursor+11]);
-      int rlength_int = Integer.parseInt(rlength, 2);
-      answer.setDataLength(String.valueOf(rlength_int));
-      System.out.println(answer.toString());
-      answerCursor += 2; /* 4 bytes for TTL */
-      
-      /* ANSEWR RDATA */
-      answerCursor += rlength_int;
-      
+        /* ANSWER TYPE */
+        String aClass = "" + helper.getBitsFromByte(data[dataCursor]) + 
+            helper.getBitsFromByte(data[dataCursor+1]);
+        int aClass_int = Integer.parseInt(aClass, 2); // I guess I don't have to
         
-      for (int i = dataCursor; i < data.length; i++) {
-//        System.out.print((char) data[i]);
+        if (helper.getBitsFromByte(data[dataCursor+1]).
+            equalsIgnoreCase("00000001")) { // 0x01, A
+          answer.setType("A");
+        } else if (helper.getBitsFromByte(data[dataCursor+1]).
+            equalsIgnoreCase("00000010")) { // 0x02, NS
+          answer.setType("NS");
+        } else if (helper.getBitsFromByte(data[dataCursor+1]).
+            equalsIgnoreCase("00000101")) { // 0x05, CNAME
+          answer.setType("CNAME");
+        }
+        dataCursor += 2; /* 2 bytes for TYPE */
+        
+        /* ANSWER CLASS */
+        if (helper.getBitsFromByte(data[dataCursor+1]).
+            equalsIgnoreCase("00000001")) { // 0x01, IN
+          answer.setDnsClass("IN");
+        }
+        dataCursor += 2; /* 2 bytes for CLASS */
+        
+        /* ANSWER TTL */
+        String ttl = "" + helper.getBitsFromByte(data[dataCursor]) + 
+            helper.getBitsFromByte(data[dataCursor+1]) + 
+            helper.getBitsFromByte(data[dataCursor+2]) + 
+            helper.getBitsFromByte(data[dataCursor+3]);
+        answer.setTtl(String.valueOf(Integer.parseInt(ttl, 2)));
+        dataCursor += 4; /* 4 bytes for TTL */
+        
+        /* ANSWER RLENGTH */
+        String rlength = "" + helper.getBitsFromByte(data[dataCursor]) + 
+            helper.getBitsFromByte(data[dataCursor+1]);
+        int rlength_int = Integer.parseInt(rlength, 2);
+        answer.setDataLength(String.valueOf(rlength_int));
+        System.out.println(answer.toString());
+        dataCursor += 2; /* 4 bytes for TTL */
+        
+        /* ANSWER RDATA */
+        dataCursor += rlength_int;
+        
+        results.add(answer);
       }
+
+      
       
       
     } else {
