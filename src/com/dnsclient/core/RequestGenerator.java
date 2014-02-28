@@ -115,8 +115,8 @@ public class RequestGenerator {
     data[12+bytesBuffer+3] = 0x01;
     
     
-    System.out.println("====== HEADER ======");
-//    helper.printBitsFromByteArray(data, false);
+    System.out.println("====== Message ID ======");
+    helper.printBitsFromByteArray(data, 2);
     return data;
   }
   
