@@ -1,19 +1,52 @@
 package com.dnsclient.core;
 
+import java.util.HashMap;
+
 public class ResponseHandler {
 
+  private static int numQuestions;
+  private static int numAnswers;
+  private static int numAuthority;
+  private static int numAdditional;
+  private static HashMap nameMap;
+  private static String targetDomain;
   private DataHelper helper = null;
   byte[] data;
   
-  public ResponseHandler(byte[] responseData) {
+  public ResponseHandler(byte[] responseData, String targetDomain) {
     this.data = responseData;
+    this.targetDomain = targetDomain;
     this.helper = DataHelper.getInstance();
+    this.nameMap = new HashMap();
     parseResponse();
   }
   
   protected void parseResponse() {
     if (helper.getBitFromByte(data[3],0) == '1') {
       // Valid DNS response, keep parsing
+      helper.printBitsFromByteArray(data, 4, 5);
+      
+      // Store the number of questions and responses records
+      String nQue = "" + helper.getBitsFromByte(data[4]) + 
+          helper.getBitsFromByte(data[5]);
+      numQuestions = Integer.parseInt(nQue, 2);
+      
+      String nAns = "" + helper.getBitsFromByte(data[6]) + 
+          helper.getBitsFromByte(data[7]);
+      numAnswers = Integer.parseInt(nAns, 2);
+      
+      String nAut = "" + helper.getBitsFromByte(data[8]) + 
+          helper.getBitsFromByte(data[9]);
+      numAuthority = Integer.parseInt(nAut, 2);
+      
+      String nAdd = "" + helper.getBitsFromByte(data[10]) + 
+          helper.getBitsFromByte(data[11]);
+      numAdditional = Integer.parseInt(nAdd, 2);
+      
+      System.out.println("Questions: " + numQuestions + " Answers RRs: " + 
+          numAnswers + " Authority RRs: " + numAuthority + 
+          " Additional RRs: " + numAdditional);
+      
       
       /* QUESTION SECTION */
       // Loop until reaching first zero byte, which is end of QNAME's domain
@@ -33,11 +66,11 @@ public class ResponseHandler {
       helper.printBitsFromByteArray(data, 23, 40); // byte[24] is where it ends (endblock)
       */
       
+      DNSAnswer[] results;
       
       
       /* ANSWER SECTION */
       
-      /* TODO: For now, just parse 1 single answering query */
       int answerCursor = 0;
       DNSAnswer answer = new DNSAnswer();
       /* ANSWER NAME */
@@ -48,6 +81,7 @@ public class ResponseHandler {
         answer.setName(name);
       } else {
         // This indicates the name field is not pointer
+        
       }
       answerCursor += 2; /* 2 bytes for NAME */
 
@@ -82,12 +116,13 @@ public class ResponseHandler {
       /* ANSEWR RLENGTH */
       String rlength = "" + helper.getBitsFromByte(data[dataCursor+10]) + 
           helper.getBitsFromByte(data[dataCursor+11]);
-      answer.setDataLength(String.valueOf(Integer.parseInt(rlength, 2)));
+      int rlength_int = Integer.parseInt(rlength, 2);
+      answer.setDataLength(String.valueOf(rlength_int));
       System.out.println(answer.toString());
-      answerCursor += 4; /* 4 bytes for TTL */
-      
+      answerCursor += 2; /* 4 bytes for TTL */
       
       /* ANSEWR RDATA */
+      answerCursor += rlength_int;
       
         
       for (int i = dataCursor; i < data.length; i++) {
