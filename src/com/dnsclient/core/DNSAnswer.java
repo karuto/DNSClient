@@ -74,7 +74,7 @@ public class DNSAnswer {
 
   @Override
   public String toString() {
-    return "DNSAnswer [name=" + /*name +*/ ", type=" + type + ", dnsClass="
+    return "DNSAnswer [name=" + name + ", type=" + type + ", dnsClass="
         + dnsClass + ", ttl=" + ttl + ", dataLength=" + dataLength
         + ", address=" + address + "]";
   }

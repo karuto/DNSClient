@@ -73,15 +73,20 @@ public class ResponseHandler {
       int answerCursor = 0;
       int answerCursorTotal = 0;
       
-      for (int i = 0; i < numAnswers; i++) {
+      for (int i = 4; i < numAnswers; i++) {
         DNSAnswer answer = new DNSAnswer();
         /* ANSWER NAME */
         if (helper.getBitFromByte(data[dataCursor], 0) =='1' && 
             helper.getBitFromByte(data[dataCursor], 1) == '1') {
           // This indicates the name field is a pointer
+          // Replace first 2 bits of '11', cast to int to find pointer index
           String name = "" + helper.getBitsFromByte(data[dataCursor]) + 
               helper.getBitsFromByte(data[dataCursor+1]);
-          answer.setName(name);
+          int pointer = Integer.parseInt("00" + name.substring(2), 2);
+          System.out.println(pointer);
+          System.out.println(retrieveName(pointer));
+          // TODO CHANGE THIS TO REAL
+          answer.setName(String.valueOf(pointer));
         } else {
           // This indicates the name field is not pointer
           
@@ -144,8 +149,27 @@ public class ResponseHandler {
   }
   
   
+  private String retrieveName(int pointerIndex) {
+    String completeName = "";
+    parseName(pointerIndex, 0, completeName);
+    return completeName;
+  }
   
+  private void parseName(int p, int count, String name) {
+    if (count == 0) {
+      // First time entering, data[p] must be segment length indicator
+      String s = "" + helper.getBitsFromByte(data[p]);
+      int segLen = Integer.parseInt(s, 2);
+      System.out.println("###### " + segLen);
+      
+    } 
+  }
   
+  private void storeName(int p, String subname) {
+    for (int i = 0; i < p; i++) {
+      
+    }
+  }
   
 }
 
