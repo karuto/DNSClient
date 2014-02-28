@@ -1,5 +1,4 @@
 package com.dnsclient.core;
-import java.nio.ByteBuffer;
 import java.util.Random;
 
 public class RequestGenerator {
@@ -7,14 +6,14 @@ public class RequestGenerator {
   public static String targetDomain = "www.example.com";
   public static String queryType;
   
+  private DataHelper helper = null;
   private byte[] data;
-  /* 8 bits = 1 byte; header is 12 bytes; */
   
   public RequestGenerator(String targetDomain, String queryType) {
     this.targetDomain = targetDomain;
     this.queryType = queryType;
-    data = new byte[1024];
-    
+    this.data = new byte[1024];
+    this.helper = DataHelper.getInstance();
   }
   
   
@@ -117,30 +116,8 @@ public class RequestGenerator {
     
     
     System.out.println("====== HEADER ======");
-    printBitsFromByteArray(data, false);
+//    helper.printBitsFromByteArray(data, false);
     return data;
-  }
-  
-  
-  /* Helper function to print bits from a byte array */
-  private void printBitsFromByteArray(byte[] bytes, Boolean hasCounter) {
-    for (int i = 0; i < bytes.length; i++) {
-      if (hasCounter) {
-        System.out.println("Byte #" + i);        
-      }
-      printBitsFromByte(bytes[i]);
-    }
-  }
-  
-  
-  /* Helper function to print bits from a single byte 
-   * Credit: http://stackoverflow.com/questions/12310017/
-   * how-to-convert-a-byte-to-its-binary-string-representation/12310078
-   */
-  private void printBitsFromByte(byte b) {
-    String bits = String.format("%8s", 
-        Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
-    System.out.println(bits);
   }
   
   

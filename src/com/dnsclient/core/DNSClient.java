@@ -5,17 +5,18 @@ import java.util.regex.Pattern;
 
 public class DNSClient {
   
-  public static String DNSIP = "0.0.0.0";
-  public static String targetDomain = "www.example.com";
+  public static String DNSIP = "";
+  public static String targetDomain = "";
   public static String queryType;
-  public static int port = 53;
+  public static int port = 53; /* port for sending DNS requests */
   
   private static Pattern pattern;
   private static Matcher matcher;
   
   /*
    * The regular expression below is borrowed from:
-   * http://examples.javacodegeeks.com/core-java/util/regex/matcher/validate-ip-address-with-java-regular-expression-example/
+   * http://examples.javacodegeeks.com/core-java/util/regex/matcher/
+   * validate-ip-address-with-java-regular-expression-example/
    */
   private static final String IPADDRESS_PATTERN = 
       "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -43,16 +44,11 @@ public class DNSClient {
       RequestGenerator request = new RequestGenerator(targetDomain, queryType);
       
       try {
-        client.connect(request.build());
+        byte[] responseData = client.connect(request.build());
+        ResponseGenerator response = new ResponseGenerator(responseData);
       } catch (Exception e) {
         e.printStackTrace();
       }
-      
-//      try {
-//        client.connect("Hi server");
-//      } catch (Exception e) {
-//        e.printStackTrace();
-//      }
       
     } else {
       System.out.println("Usage: java -cp *.jar DNSClient 8.8.8.8 www.cnn.com A");

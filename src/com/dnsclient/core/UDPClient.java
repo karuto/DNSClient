@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 public class UDPClient {
   static DatagramSocket clientSocket;
   static InetAddress IPAddress;
+  static byte[] responseData;
   
   public static String host = "0.0.0.0";
   public static String targetDomain = "www.example.com";
@@ -28,6 +29,8 @@ public class UDPClient {
     this.targetDomain = targetDomain;
     this.queryType = queryType;
     
+    this.responseData = new byte[1024];
+    
     try {
       IPAddress = InetAddress.getByName(host);
     } catch (UnknownHostException e) {
@@ -35,7 +38,7 @@ public class UDPClient {
     }
   }
   
-  public void connect(byte[] sendData) throws Exception {
+  public byte[] connect(byte[] sendData) throws Exception {
      
      byte[] receiveData = new byte[1024];   
      
@@ -46,9 +49,10 @@ public class UDPClient {
      DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
      clientSocket.receive(receivePacket);
      
-     String modifiedSentence = new String(receivePacket.getData());
-     System.out.println("DATA FROM SERVER:" + modifiedSentence);
-     
+     responseData = receivePacket.getData();
      clientSocket.close();
+     
+     return responseData;
+     
   }
 }
