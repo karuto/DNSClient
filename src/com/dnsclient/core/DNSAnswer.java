@@ -8,6 +8,7 @@ public class DNSAnswer {
   String ttl;
   String dataLength;
   String address;
+  String recordType;
   
   public DNSAnswer() {
     super();
@@ -22,6 +23,14 @@ public class DNSAnswer {
     this.ttl = ttl;
     this.dataLength = dataLength;
     this.address = address;
+  }
+
+  public String getRecordType() {
+    return recordType;
+  }
+
+  public void setRecordType(String recordType) {
+    this.recordType = recordType;
   }
 
   public String getName() {
@@ -74,9 +83,8 @@ public class DNSAnswer {
 
   @Override
   public String toString() {
-    return "DNSAnswer [name=" + name + ", type=" + type + ", dnsClass="
-        + dnsClass + ", ttl=" + ttl + ", dataLength=" + dataLength
-        + ", address=" + address + "]";
+    return name + "\t\t\t" + ttl + "\t" + dnsClass + "\t"
+        + type + "\t" + address + "";
   }
 
   
