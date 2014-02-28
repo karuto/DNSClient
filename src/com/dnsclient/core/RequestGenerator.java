@@ -18,10 +18,6 @@ public class RequestGenerator {
   
   
   public byte[] build() {
-    System.out.println("====== STARTING REQUEST BUILDER ======");
-    System.out.println(this.targetDomain);
-    System.out.println(this.queryType);
-    
     /* HEADER SECTION */
     /* 16 bit Message ID, randomly generated */
     // TODO: record this message ID so that it can be parsed at response
@@ -81,6 +77,7 @@ public class RequestGenerator {
 //      int sum = i+k;
 //      System.out.println("=== " + sum + " | " + part.length());
       
+      
       for (char c : part.toCharArray()) {
         k++;
         // Store the hex representation of each character
@@ -94,7 +91,7 @@ public class RequestGenerator {
     }
 //    printBitsFromByteArray(domainBuffer, true);
     int bytesBuffer = domainBuffer.length;
-    System.out.println(bytesBuffer);
+//    System.out.println(bytesBuffer);
     
     /* Transfer bytes in buffer to the data byte array */
     for (int i = 0; i < domainBuffer.length-1; i++) {
@@ -107,16 +104,12 @@ public class RequestGenerator {
       data[12+bytesBuffer+1] = 0x01;
     } else {
       //TODO: Handle 8 other record types
-    }
-    
+    }    
     
     /* QCLASS */
     data[12+bytesBuffer+2] = 0x00;
     data[12+bytesBuffer+3] = 0x01;
     
-    
-    System.out.println("====== Message ID ======");
-    helper.printBitsFromByteArray(data, 2);
     return data;
   }
   

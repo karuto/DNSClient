@@ -45,7 +45,7 @@ public class DNSClient {
       
       try {
         byte[] responseData = client.connect(request.build());
-        ResponseGenerator response = new ResponseGenerator(responseData);
+        ResponseHandler response = new ResponseHandler(responseData);
       } catch (Exception e) {
         e.printStackTrace();
       }

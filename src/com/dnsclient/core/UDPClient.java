@@ -38,13 +38,16 @@ public class UDPClient {
     }
   }
   
+  /*
+   * The skeleton of this method is inspired from:
+   * http://systembash.com/content/a-simple-java-udp-server-and-udp-client/
+   */
   public byte[] connect(byte[] sendData) throws Exception {
      
      byte[] receiveData = new byte[1024];   
      
      DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
      clientSocket.send(sendPacket);
-     System.out.println("DATA TO SERVER:" + sendPacket.getData());
      
      DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
      clientSocket.receive(receivePacket);
