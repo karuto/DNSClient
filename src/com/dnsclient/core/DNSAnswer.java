@@ -6,6 +6,7 @@ public class DNSAnswer {
   String type;
   String dnsClass;
   String ttl;
+  String dataLength;
   String address;
   
   public DNSAnswer() {
@@ -13,12 +14,13 @@ public class DNSAnswer {
   }
   
   public DNSAnswer(String name, String type, String dnsClass, String ttl,
-      String address) {
+      String dataLength, String address) {
     super();
     this.name = name;
     this.type = type;
     this.dnsClass = dnsClass;
     this.ttl = ttl;
+    this.dataLength = dataLength;
     this.address = address;
   }
 
@@ -54,6 +56,14 @@ public class DNSAnswer {
     this.ttl = ttl;
   }
 
+  public String getDataLength() {
+    return dataLength;
+  }
+
+  public void setDataLength(String dataLength) {
+    this.dataLength = dataLength;
+  }
+
   public String getAddress() {
     return address;
   }
@@ -64,9 +74,10 @@ public class DNSAnswer {
 
   @Override
   public String toString() {
-    return "DNSAnswer [name=" + /*name + */ ", type=" + type + ", dnsClass="
-        + dnsClass + ", ttl=" + ttl + ", address=" + address + "]";
+    return "DNSAnswer [name=" + /*name +*/ ", type=" + type + ", dnsClass="
+        + dnsClass + ", ttl=" + ttl + ", dataLength=" + dataLength
+        + ", address=" + address + "]";
   }
-  
+
   
 }

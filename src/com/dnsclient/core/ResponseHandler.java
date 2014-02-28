@@ -65,17 +65,28 @@ public class ResponseHandler {
       answerCursor += 2; /* 2 bytes for TYPE */
       
       /* ANSEWR CLASS */
-      helper.printBitsFromByte(data[dataCursor+4]);
-      helper.printBitsFromByte(data[dataCursor+5]);
       if (helper.getBitsFromByte(data[dataCursor+5]).
           equalsIgnoreCase("00000001")) { // 0x01, IN
         answer.setDnsClass("IN");
       }
-      System.out.println(answer.toString());
       answerCursor += 2; /* 2 bytes for CLASS */
       
       /* ANSEWR TTL */
+      String ttl = "" + helper.getBitsFromByte(data[dataCursor+6]) + 
+          helper.getBitsFromByte(data[dataCursor+7]) + 
+          helper.getBitsFromByte(data[dataCursor+8]) + 
+          helper.getBitsFromByte(data[dataCursor+9]);
+      answer.setTtl(String.valueOf(Integer.parseInt(ttl, 2)));
+      answerCursor += 4; /* 4 bytes for TTL */
+      
       /* ANSEWR RLENGTH */
+      String rlength = "" + helper.getBitsFromByte(data[dataCursor+10]) + 
+          helper.getBitsFromByte(data[dataCursor+11]);
+      answer.setDataLength(String.valueOf(Integer.parseInt(rlength, 2)));
+      System.out.println(answer.toString());
+      answerCursor += 4; /* 4 bytes for TTL */
+      
+      
       /* ANSEWR RDATA */
       
         
