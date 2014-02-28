@@ -14,6 +14,7 @@ public class ResponseHandler {
   private DataHelper helper = null;
   byte[] data;
   
+  
   public ResponseHandler(byte[] responseData, String targetDomain) {
     this.data = responseData;
     this.targetDomain = targetDomain;
@@ -151,24 +152,42 @@ public class ResponseHandler {
   
   private String retrieveName(int pointerIndex) {
     String completeName = "";
-    parseName(pointerIndex, 0, completeName);
-    return completeName;
+    String name = parseName(pointerIndex, 0, "");
+    System.out.println("### Complete Name #### " + name);
+    return name;
   }
   
-  private void parseName(int p, int count, String name) {
-    if (count == 0) {
+  private String parseName(int p, int count, String name) {
+    if (helper.getBitsFromByte(data[p]).equalsIgnoreCase("00000000")) {
+      // Ending condition, because you reached end of the name
+      System.out.println("###### CHECKING: p=" + p + " count=" + count + " name=" + name);
+      return name;
+    } else {
       // First time entering, data[p] must be segment length indicator
+      // Parse first byte (the length)
       String s = "" + helper.getBitsFromByte(data[p]);
       int segLen = Integer.parseInt(s, 2);
-      System.out.println("###### " + segLen);
       
-    } 
+      // Base on the length, parse the next [length] bytes and save it
+      String subname = storeSubname(p, segLen);
+      
+      // Increment the counter, move it to the latest location
+      p += (segLen+1);
+      count++;
+      name += subname;
+      parseName(p, count, name);
+      return name;
+    }
   }
   
-  private void storeName(int p, String subname) {
-    for (int i = 0; i < p; i++) {
-      
+  private String storeSubname(int base, int offset) {
+    String subname = "";
+    for (int i = 1; i <= offset; i++) {
+      char c = (char) data[base+i];
+      subname += c;
     }
+    subname += ".";
+    return subname;
   }
   
 }
