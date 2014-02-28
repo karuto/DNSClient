@@ -65,15 +65,34 @@ public class RequestGenerator {
     /* QUESTION SECTION */
     /* QNAME */
     String[] domainParts = targetDomain.split("\\.");
-    int QNAMEBytes = 0;
-    byte[] domain = new byte[5];
-    ByteBuffer buffer = ByteBuffer.wrap(domain);
+    int k = 0;
+    
+    /* The size of this buffer is domain (before split) +2 because:
+     * +1 for the length block (no. of chars) at beginning
+     * +1 for the 0x00 end block
+     */
+    byte[] domainBuffer = new byte[targetDomain.length()+2];
+
     for (int i = 0; i < domainParts.length; i++) {
-      QNAMEBytes++;
-//      buffer.putInt(domainParts[i].length());
-      domain[i] = (byte) domainParts[i].length();
+      String part = domainParts[i];
+      // Store the length (no. of chars) of domain segment first
+      domainBuffer[i+k] = (byte) part.length();
+      
+//      int sum = i+k;
+//      System.out.println("=== " + sum + " | " + part.length());
+      
+      for (char c : part.toCharArray()) {
+        k++;
+        // Store the hex representation of each character
+        domainBuffer[i+k] = (byte) c;
+        
+//        System.out.println(String.format("%04x", (int) c));
+//        sum = i+k;
+//        System.out.println("===~~~ " + sum + " | " + i+k + " | " + (byte) c);
+        
+      }
     }
-    printBitsFromByteArray(domain);
+    printBitsFromByteArray(domainBuffer, false);
 
     /* QTYPE */
     /* QCLASS */
@@ -86,10 +105,11 @@ public class RequestGenerator {
   
   
   /* Helper function to print bits from a byte array */
-  private void printBitsFromByteArray(byte[] bytes) {
-    for (int i = 0; i < bytes.length; i++)
-    {
-      System.out.println("Byte #" + i);
+  private void printBitsFromByteArray(byte[] bytes, Boolean hasCounter) {
+    for (int i = 0; i < bytes.length; i++) {
+      if (hasCounter) {
+        System.out.println("Byte #" + i);        
+      }
       printBitsFromByte(bytes[i]);
     }
   }
