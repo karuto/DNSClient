@@ -12,7 +12,6 @@ public class ResponseHandler {
   }
   
   protected void parseResponse() {
-    System.out.println("======= RESPONSE ====== ");
     if (helper.getBitFromByte(data[3],0) == '1') {
       // Valid DNS response, keep parsing
       
@@ -24,6 +23,9 @@ public class ResponseHandler {
         dataCursor++;
       }
       dataCursor++; // +1 for empty end block
+      dataCursor += 2; // +2 for QTYPE
+      dataCursor += 2; // +2 for QCLASS
+      /* Cursor now points at the first byte (beginning) of answer section */
       
       /*
       System.out.println();
@@ -32,15 +34,52 @@ public class ResponseHandler {
       */
       
       
-      /* ANSWERING SECTION */
-      // Put the cursor at the beginning of Answer section
-      helper.printBitsFromByte(data[dataCursor+4]); // +2 for QTYPE, +2 for QCLASS
-      helper.printBitsFromByte(data[dataCursor+5]);
-    
-
-      System.out.println("=========================");
       
-      for (int i = dataCursor+4; i < data.length; i++) {
+      /* ANSWER SECTION */
+      
+      /* TODO: For now, just parse 1 single answering query */
+      int answerCursor = 0;
+      DNSAnswer answer = new DNSAnswer();
+      /* ANSWER NAME */
+      if (helper.getBitFromByte(data[dataCursor], 0) =='1' && 
+          helper.getBitFromByte(data[dataCursor], 1) == '1') {
+        // This indicates the name field is a pointer
+        String name = "" + (char) data[dataCursor] + (char) data[dataCursor+1];
+        answer.setName(name);
+      } else {
+        // This indicates the name field is not pointer
+      }
+      answerCursor += 2; /* 2 bytes for NAME */
+
+      /* ANSEWR TYPE */
+      if (helper.getBitsFromByte(data[dataCursor+3]).
+          equalsIgnoreCase("00000001")) { // 0x01, A
+        answer.setType("A");
+      } else if (helper.getBitsFromByte(data[dataCursor+3]).
+          equalsIgnoreCase("00000010")) { // 0x02, NS
+        answer.setType("NS");
+      } else if (helper.getBitsFromByte(data[dataCursor+3]).
+          equalsIgnoreCase("00000101")) { // 0x05, CNAME
+        answer.setType("CNAME");
+      }
+      answerCursor += 2; /* 2 bytes for TYPE */
+      
+      /* ANSEWR CLASS */
+      helper.printBitsFromByte(data[dataCursor+4]);
+      helper.printBitsFromByte(data[dataCursor+5]);
+      if (helper.getBitsFromByte(data[dataCursor+5]).
+          equalsIgnoreCase("00000001")) { // 0x01, IN
+        answer.setDnsClass("IN");
+      }
+      System.out.println(answer.toString());
+      answerCursor += 2; /* 2 bytes for CLASS */
+      
+      /* ANSEWR TTL */
+      /* ANSEWR RLENGTH */
+      /* ANSEWR RDATA */
+      
+        
+      for (int i = dataCursor; i < data.length; i++) {
 //        System.out.print((char) data[i]);
       }
       

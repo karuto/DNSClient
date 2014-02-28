@@ -8,6 +8,10 @@ public class DNSAnswer {
   String ttl;
   String address;
   
+  public DNSAnswer() {
+    super();
+  }
+  
   public DNSAnswer(String name, String type, String dnsClass, String ttl,
       String address) {
     super();
@@ -57,8 +61,12 @@ public class DNSAnswer {
   public void setAddress(String address) {
     this.address = address;
   }
-  
-  
+
+  @Override
+  public String toString() {
+    return "DNSAnswer [name=" + /*name + */ ", type=" + type + ", dnsClass="
+        + dnsClass + ", ttl=" + ttl + ", address=" + address + "]";
+  }
   
   
 }
