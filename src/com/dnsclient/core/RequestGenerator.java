@@ -102,6 +102,12 @@ public class RequestGenerator {
     if (queryType.equalsIgnoreCase("A")) {
       data[12+bytesBuffer] = 0x00;
       data[12+bytesBuffer+1] = 0x01;
+    } else if (queryType.equalsIgnoreCase("NS")) {
+      data[12+bytesBuffer] = 0x00;
+      data[12+bytesBuffer+1] = 0x02;
+    } else if (queryType.equalsIgnoreCase("MX")) {
+      data[12+bytesBuffer] = 0x00;
+      data[12+bytesBuffer+1] = 0x0F;
     } else {
       //TODO: Handle 8 other record types
     }    

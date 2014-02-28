@@ -9,7 +9,7 @@ public class ResponseHandler {
   private static int numAnswers;
   private static int numAuthority;
   private static int numAdditional;
-  private static HashMap nameMap;
+  private static HashMap<Integer, String> nameMap;
   private static String targetDomain;
   private DataHelper helper = null;
   byte[] data;
@@ -68,13 +68,10 @@ public class ResponseHandler {
       */
       
       ArrayList<DNSAnswer> results = new ArrayList<DNSAnswer>();
-      
-      
+
       /* ANSWER SECTION */
-      int answerCursor = 0;
-      int answerCursorTotal = 0;
       
-      for (int i = 4; i < numAnswers; i++) {
+      for (int i = 0; i < numAnswers; i++) {
         DNSAnswer answer = new DNSAnswer();
         /* ANSWER NAME */
         if (helper.getBitFromByte(data[dataCursor], 0) =='1' && 
@@ -84,10 +81,8 @@ public class ResponseHandler {
           String name = "" + helper.getBitsFromByte(data[dataCursor]) + 
               helper.getBitsFromByte(data[dataCursor+1]);
           int pointer = Integer.parseInt("00" + name.substring(2), 2);
-          System.out.println(pointer);
-          System.out.println(retrieveName(pointer));
-          // TODO CHANGE THIS TO REAL
-          answer.setName(String.valueOf(pointer));
+          // Call the recursive parsing function to get full domain name
+          answer.setName(retrieveName(pointer));
         } else {
           // This indicates the name field is not pointer
           
@@ -151,17 +146,19 @@ public class ResponseHandler {
   
   
   private String retrieveName(int pointerIndex) {
-    String completeName = "";
-    String name = parseName(pointerIndex, 0, "");
-    System.out.println("### Complete Name #### " + name);
-    return name;
+    parseName(pointerIndex, pointerIndex, 0, "");
+//    System.out.println("### Complete Name #### " + nameMap.get(pointerIndex));
+    return nameMap.get(pointerIndex);
   }
   
-  private String parseName(int p, int count, String name) {
+  private void parseName(int p_copy, int p, int count, String name) {
     if (helper.getBitsFromByte(data[p]).equalsIgnoreCase("00000000")) {
       // Ending condition, because you reached end of the name
-      System.out.println("###### CHECKING: p=" + p + " count=" + count + " name=" + name);
-      return name;
+      // I gave up. I'm storing in HashMap because of a strange error
+      // preventing me from passing the return value.
+      nameMap.put(p_copy, name);
+//      System.out.println("###### CHECKING: p=" + p + " p_copy=" + p_copy +
+//          " count=" + count + " name=" + name);
     } else {
       // First time entering, data[p] must be segment length indicator
       // Parse first byte (the length)
@@ -175,8 +172,7 @@ public class ResponseHandler {
       p += (segLen+1);
       count++;
       name += subname;
-      parseName(p, count, name);
-      return name;
+      parseName(p_copy, p, count, name);
     }
   }
   
